@@ -3,38 +3,48 @@ Welcome to the Library Management System template for your programming challenge
 This template is designed to help you implement various functions required to
 build a functional library management system. Below is a brief guide on how you
 can use this template to complete the challenge:
+
 1. **Understanding the Structure**: Take a moment to review the structure of the
 provided template.
 You'll notice that it includes function prototypes for each required function, as
 well as a `main` function where you can test your implementations.
+
 2. **Function Implementations**: Your task is to complete the implementation of
 each function according to the specifications provided in the challenge
 description.
 Each function has a comment indicating where you should implement the corresponding
 functionality.
+
 3. **Testing Your Code**: Once you've completed the implementations, you should
 test your code by calling
 the functions from the `main` function or by writing additional test cases. Ensure
 that your functions produce the expected outputs and handle edge cases
 appropriately.
+
 IF NOT, YOU WILL NOT RECEIVE ANY CREDIT!
+
 4. **Time Complexity Analysis**: Don't forget to analyze the time complexity of
 each function.
 You can implement the `analyze_time_complexity` function to provide a brief
 analysis of the time complexity of your implementations.
+
 5. **Documentation**: You are required to add comments throughout your code to
 explain your implementation logic,
 especially for complex algorithms or data structures.
+
 6. **Optimization**: While implementing the functions, consider ways to optimize
 your code for performance and efficiency.
 This includes minimizing time complexity and utilizing appropriate data structures
 and algorithms.
+
 7. **Additional Tasks**: If you're up for an extra challenge, you should also
 implement the additional tasks mentioned in the challenge description.
+
 8. **Submission**: Once you've completed all the required functions and tasks, you
 should submit your code for evaluation based on the provided evaluation criteria.
 Feel free to modify the template as needed to suit your implementation style and
 preferences. Good luck, and happy coding!
+
 Dr. Petro Mushidi Tshakwanda
 */
 #include <stdio.h>
