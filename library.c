@@ -53,13 +53,13 @@ Dr. Petro Mushidi Tshakwanda
 #include <stdbool.h>
 // Define structure for Book
 typedef struct Book {
-char title[100];
-char author[100];
-char genre[50];
-char isbn[20];
-char date[20];
-bool available;
-struct Book *next;
+    char title[100];
+    char author[100];
+    char genre[50];
+    char isbn[20];
+    char date[20];
+    bool available;
+    struct Book *next;
 } Book;
 // Function prototypes
 void add_book(Book **library, const char *title, const char *author,
@@ -72,14 +72,36 @@ void recommend_books(const Book *library, const char *isbn);
 void manage_reservation_queue(Book **library, const char *isbn);
 bool check_duplicate_book(const Book *library, const char *isbn);
 int main() {
-// Test your functions here
-return 0;
+    // Test your functions here
+    Book hobbit = { "Hobbit", "JRR Tolkien", "fantasy", "9780547928227", "1937-09", true};
+    Book dune = { "Dune", "Frank Herbert", "scifi", "9780441172719", "1965-08", true, &hobbit};
+    const Book* result = search_book(&dune, "9780547928227", "isbn");
+    printf("%s\n", result->title);
+    printf("%s\n", result->author);
+    printf("%s\n", result->genre);
+    printf("%s\n", result->isbn);
+    printf("%s\n", result->date);
+    return 0;
 }
 void add_book(Book **library, const char *title, const char *author, const char *genre, const char *isbn, const char *date) {
-// Implement adding a book to the library
+    // Implement adding a book to the library
 }
 Book* search_book(const Book *library, const char *query, const char *criteria) {
-// Implement searching for a book in the library
+    // Loop through the linked list
+    while (library != NULL) {
+        if (strcmp(criteria, "title") == 0) {
+            if (strcmp(library->title, query) == 0) {
+                return library;
+            }
+        } else if (strcmp(criteria, "isbn") == 0) {
+            if (strcmp(library->isbn, query) == 0) {
+                return library;
+            }
+        }
+        // try the next book
+        library = library->next;
+    }
+    return NULL;
 }
 void check_out_book(Book **library, const char *isbn) {
 // Implement checking out a book from the library
@@ -87,9 +109,9 @@ void check_out_book(Book **library, const char *isbn) {
 void return_book(Book **library, const char *isbn) {
 // Implement returning a book to the library
 }
-bool check_availability(const Book *library, const char *isbn) {
+// bool check_availability(const Book *library, const char *isbn) {
 // Implement checking the availability of a specific book
-}
+// }
 void recommend_books(const Book *library, const char *isbn) {
 // Implement recommending similar books
 printf("Recommendations based on book with ISBN %s:\n", isbn);
@@ -100,6 +122,6 @@ void manage_reservation_queue(Book **library, const char *isbn) {
 printf("Managing reservation queue for book with ISBN %s\n", isbn);
 // Implementation of reservation queue management
 }
-bool check_duplicate_book(const Book *library, const char *isbn) {
+// bool check_duplicate_book(const Book *library, const char *isbn) {
 // Implement checking for duplicates before adding a new book
-}
+// }
