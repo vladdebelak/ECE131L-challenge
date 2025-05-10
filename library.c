@@ -67,22 +67,64 @@ const char genre, const char isbn, const char date);
 Book* search_book(const Book *library, const char *query, const char *criteria);
 void check_out_book(Book **library, const char *isbn);
 void return_book(Book **library, const char *isbn);
+void saveLibrary(Book *library);
 /*bool check_availability(const Book *library, const char *isbn);
 void recommend_books(const Book *library, const char *isbn);
 void manage_reservation_queue(Book **library, const char *isbn);
 bool check_duplicate_book(const Book *library, const char *isbn);*/
 int main() {
-    // Test your functions here
+    // Declare the ints and chars
     int command;
     char title[100],author[100],genre[50],isbn[20],date[20],criteria[10],query[100];
-    Book hobbit = { "Hobbit", "JRR Tolkien", "fantasy", "9780547928227", "1937-09", true};
-    Book dune = { "Dune", "Frank Herbert", "scifi", "9780441172719", "1965-08", true, &hobbit};
-    Book* library = &dune;
+    // Declare some books to the library
+    // Book hobbit = { "Hobbit", "JRR Tolkien", "fantasy", "9780547928227", "1937-09", true};
+    // Book dune = { "Dune", "Frank Herbert", "scifi", "9780441172719", "1965-08", true, &hobbit};
+    // Create the library
+    // Book* library = &dune;
+    // FILE *of;
+    // of= fopen ("books.bin", "a");
+    // if (of == NULL) {
+    //     fprintf(stderr, "Error to open the file");
+    //     exit (1);
+    // }
+    // Book hobbit = { "Hobbit", "JRR Tolkien", "fantasy", "9780547928227", "1937-09", true};
+    // Book dune = { "Dune", "Frank Herbert", "scifi", "9780441172719", "1965-08", true, &hobbit};
+    // fwrite (&hobbit, sizeof(Book), 1, of);
+    // fwrite (&dune, sizeof(Book), 1, of);
+    // if(fwrite != 0)
+    //     printf("Contents to file written successfully !");
+    // else
+    //     printf("Error writing file !");
+    // fclose (of);
+
+    // Book* library = &dune;
+
+    FILE *books;
+    Book head;
+    head.next = NULL;
+    Book *previous = &head;
+    Book x;
+    books = fopen("books.bin", "rb");
+    while(fread(&x, sizeof(Book), 1, books)) {
+        printf ("title = %s author = %s\n", x.title, x.author);
+        x.next = NULL;
+        // Allocate space
+        previous->next = malloc(sizeof *(previous->next));
+        // Set the next node in the linked list
+        *(previous->next) = x;
+        // Advance to the next
+        previous = previous->next;
+    }
+    fclose (books);
+    Book* library = head.next;
+    // This loop just asks what commands they want
     while(command != 5){
         printf("Which command do you want(type the number for what command you want)?\n");
         printf("Add book(1)\nSearch book(2)\nCheck out book(3)\nReturn book(4)\nQuit(5)\n");
         scanf("%i", &command);
+        // This command asks for all the books information and then puts it into the add_book function
         if(command == 1){
+            // All the scanf functions have one less because otherwise there is an error
             printf("What is the tile of the book?\n");
             scanf(" %99[^\n]", title);
             printf("What is the author of the book?\n");
@@ -94,15 +136,20 @@ int main() {
             printf("What is the date of publication for the book?\n");
             scanf(" %19[^\n]", date);
             add_book(&library, title[100], author[100], genre[50], isbn[20], date[20]);
+        // This command asks for what book they want to search and puts the information into search_book
         }else if(command == 2){
+            // This asks for what they want to look for such as a title or an author
             printf("what is the criteria for the search?");
             scanf(" %9[^\n]", criteria);
+            // This asks for the specific name of the criteria
             printf("what is the query for the search?");
             scanf(" %99[^\n]", query);
-            const Book* result = search_book(&dune, query, criteria);
+            const Book* result = search_book(library, query, criteria);
+            // This is just to let the user know if there is no book that they looked for
             if(result == NULL){
                 printf("We do not have that book\n");
             }else{
+                // This just prints the results if it is not NULL
                 printf("%s\n", result->title);
                 printf("%s\n", result->author);
                 printf("%s\n", result->genre);
@@ -110,20 +157,28 @@ int main() {
                 printf("%s\n", result->date);
                 printf("%d\n", result->available);
             }
+        // This command asks for the isbn and checks out the book by accessing the check_out_book function
         }else if(command == 3){
             printf("What is the isbn of the book you want to check out?\n");
             scanf(" %19[^\n]", isbn);
             check_out_book(&library, isbn);
+        // This asks for the isbn and returns the book using the return_book function
         }else if(command == 4){
             printf("What is the isbn of the book you want to return?\n");
             scanf(" %19[^\n]", isbn);
             return_book(&library, isbn);
+        // This is the quit command
+        }else if(command == 5){
+            break;
+        // This is incase the user inputs something other than an int that is 1-5
         }else{
             printf("Error: command not understood\n");
         }
     }
+    saveLibrary(library);
     return 0;
 }
+// This function adds a book to the end of a list
 void add_book(Book **library, const char title, const char author, const char genre, const char isbn, const char date) {
     // Implement adding a book to the library
     Book *temp;
@@ -208,6 +263,17 @@ void return_book(Book **library, const char *isbn) {
         } else {
             library = NULL;
         }
+    }
+}
+
+void saveLibrary(Book *library) {
+    FILE *books;
+    books = fopen("books.bin", "wb");
+    while (library != NULL) {
+        printf ("title = %s author = %s\n", library->title, library->author);
+        fwrite (library, sizeof(Book), 1, books);
+        // save the next book
+        library = library->next;
     }
 }
 /*These next functions are optional
