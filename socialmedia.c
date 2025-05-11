@@ -57,54 +57,272 @@ Dr. Petro M. Tshakwanda
 #define MAX_USERS 100
 #define MAX_POSTS 1000
 #define MAX_FOLLOWERS 100
-typedef struct {
-char username[50];
-char password[50];
-char email[100];
-char posts[MAX_POSTS][200];
-int num_posts;
-char followers[MAX_FOLLOWERS][50];
-int num_followers;
+typedef struct
+{
+    char username[50];
+    char password[50];
+    char email[100];
+    char posts[MAX_POSTS][200];
+    int num_posts;
+    char followers[MAX_FOLLOWERS][50];
+    int num_followers;
+    struct User *next;
 } User;
 // Function prototypes
-void create_account(User *users, int *num_users);
-void post_message(User *users, int num_users);
-void follow_user(User *users, int num_users);
-void generate_feed(User *users, int num_users);
-/* 
+void create_account(User **platform);
+void post_message(User **platform);
+void follow_user(User **platform);
+void generate_feed(User *platform);
+User *loadPlatform(int *num_users);
+void savePlatform(User *platform);
+/*
 void unfollow_user(User *users, int num_users);
 void delete_account(User *users, int *num_users);
 bool authenticate_user(User *users, int num_users);
 void privacy_settings(User *users, int num_users);
 */
-int main() {
-// Test your functions here
-return 0;
-}
-void create_account(User *users, int *num_users) {
-// Implement creating a new user account
-    printf("What is your username?\n");
-    scanf(" %50[^\n]", users->username);
-    printf("What is your password?\n");
-    scanf(" %50[^\n]", users->password);
-    printf("What is your email?\n");
-    scanf(" %100[^\n]", users->email);
-    users->num_posts=0;
-    users->num_followers=0;
-}
-void post_message(User *users, int num_users) {
-// Implement posting a message
-    printf("What would you like to post(It can't be more than 200 charecters)?\n");
-    scanf(" %200[^\n]", users->posts[users->num_posts][200]);
-}
-void follow_user(User *users, int num_users) {
-// Implement following another user
-    char username[50];
-    printf("What username do you want to follow?");
+int main()
+{
+    int num_users = 0, command = 0;
+    User *platform = loadPlatform(&num_users);
     
+    char users[MAX_USERS];
+    // Test your functions here
+    while (command != 5)
+    {
+        printf("Create Account(1)\nPost Message(2)\nFollow User(3)\nGenerate Feed(4)\nSave and Quit(5)\n");
+        printf("What command would you like?");
+        scanf("%i", &command);
+        if (command == 1)
+        {
+            if (num_users < MAX_USERS)
+            {
+                num_users++;
+                create_account(&platform);
+            }
+            else
+            {
+                printf("Error: There is no more room for more users\n");
+            }
+        }
+        else if (command == 2)
+        {
+            post_message(&platform);
+        }
+        else if (command == 3)
+        {
+            follow_user(&platform);
+        }
+        else if (command == 4)
+        {
+            // generate_feed(&platform,num_users);
+        }
+        else if (command == 5)
+        {
+            break;
+        }
+        else
+        {
+            printf("Error: command not understood\n");
+        }
+    }
+    savePlatform(platform);
+    return 0;
 }
-void generate_feed(User *users, int num_users) {
-// Implement generating a user's feed
+void create_account(User **platform)
+{
+    // Implement creating a new user account
+    User *newUser = malloc(sizeof(User));
+    char username[50], password[50], email[100];
+    printf("What is your username?\n");
+    scanf(" %49[^\n]", username);
+    printf("What is your password?\n");
+    scanf(" %49[^\n]", password);
+    printf("What is your email?\n");
+    scanf(" %99[^\n]", email);
+    strcpy(newUser->username, username);
+    strcpy(newUser->password, password);
+    strcpy(newUser->email, email);
+    newUser->num_followers = 0;
+    newUser->num_posts = 0;
+    newUser->next = NULL;
+    // If the platform is empty, this is our platform
+    if (*platform == NULL) {
+        *platform = newUser;
+        return;
+    }
+    // // Store the head reference in a temporary variable 
+    User *last = *platform;
+    // Traverse till the last node
+    while (last->next != NULL)
+    {
+        last = last->next;
+    }
+    last->next = newUser;
+}
+void post_message(User **platform)
+{
+    // Implement posting a message;
+    char username[50];
+    printf("What is your username\n");
+    scanf(" %49[^\n]", username);
+    while (platform != NULL)
+    {
+        // Find the username that you are looking for
+        if (strcmp((*platform)->username, username) == 0)
+        {
+            break;
+        }
+        // try the next user
+        if ((*platform)->next)
+        {
+            platform = &((*platform))->next;
+        }
+        else
+        {
+            printf("Error: We did not find anyone with that username\n");
+            return;
+        }
+        if ((*platform)->num_posts < MAX_POSTS)
+        {
+            printf("What would you like to post(It can't be more than 200 charecters)?\n");
+            scanf(" %200[^\n]", (*platform)->posts[(*platform)->num_posts]);
+            (*platform)->num_posts++;
+        }
+        else
+        {
+            printf("Error: You have already reached your maximum number of posts\n");
+            return;
+        }
+    }
+}
+void follow_user(User **platform)
+{
+    // Implement following another user
+    char username[50];
+    printf("What is your username\n");
+    scanf(" %49[^\n]", username);
+    while (platform != NULL)
+    {
+        // Find the username that you are looking for
+        if (strcmp((*platform)->username, username) == 0)
+        {
+            break;
+        }
+        // try the next user
+        if ((*platform)->next)
+        {
+            platform = &((*platform))->next;
+        }
+        else
+        {
+            printf("Error: We did not find anyone with that username\n");
+            return;
+        }
+    }
+    if ((*platform)->num_followers < MAX_FOLLOWERS)
+    {
+        printf("What username do you want to follow?");
+        scanf(" %49[^\n]", (*platform)->username[(*platform)->num_followers]);
+        (*platform)->num_followers++;
+    }
+    else
+    {
+        printf("Error: You have reached the maximum number of followers\n");
+    }
+}
+void generate_feed(User *users)
+{
+    // Implement generating a user's feed
+    char username[50];
+    int i, j;
+    printf("What is your username\n");
+    scanf(" %49[^\n]", username);
+    while (users != NULL)
+    {
+        // Find the username that you are looking for
+        if (strcmp(users->username, username) == 0)
+        {
+            break;
+        }
+        // try the next user
+        if (users->next)
+        {
+            users = &(users)->next;
+        }
+        else
+        {
+            printf("Error: We did not find anyone with that username\n");
+            return;
+        }
+    }
+    if (users->followers == NULL)
+    {
+        printf("Error: You do not have any followers\n");
+    }
+    else
+    {
+        for (i = 0; i < users->num_followers; i++)
+        {
+            char follower = *users->followers[i];
+            while (users != NULL)
+            {
+                // Find the username that you are looking for
+                if (strcmp(users->username, &follower) == 0)
+                {
+                    printf("%s:\n", follower);
+                    for (j = 0; j < users->num_posts; j++)
+                    {
+                        printf("%s\n", users->posts[j]);
+                    }
+                    break;
+                }
+                // try the next user
+                if (users->next)
+                {
+                    users = &(users)->next;
+                }
+            }
+        }
+    }
+}
+User *loadPlatform(int *num_users)
+{
+    FILE *platform;
+    User head;
+    head.next = NULL;
+    User *previous = &head;
+    User x;
+    platform = fopen("users.bin", "rb");
+    // If the file is empty, return NULL
+    if (platform == NULL) {
+        return NULL;
+    }
+    while (fread(&x, sizeof(User), 1, platform))
+    {
+        printf("username = %s email = %s\n", x.username, x.email);
+        x.next = NULL;
+        // Allocate space
+        previous->next = malloc(sizeof previous->next);
+        // Set the next node in the linked list
+        previous->next = &x;
+        // Advance to the next
+        previous = previous->next;
+        num_users++;
+    }
+    fclose(platform);
+    return head.next;
+}
+void savePlatform(User *users)
+{
+    FILE *platform;
+    platform = fopen("users.bin", "wb");
+    while (users != NULL)
+    {
+        fwrite(users, sizeof(User), 1, platform);
+        // save the next book
+        users = users->next;
+    }
 }
 /*
 void unfollow_user(User *users, int num_users) {
